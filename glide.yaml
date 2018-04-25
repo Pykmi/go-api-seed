@@ -1,0 +1,12 @@
+package: .
+import:
+- package: github.com/pykmi/api-seed
+  subpackages:
+  - datastore
+  - handlers
+- package: goji.io
+  version: ~2.0.0
+  subpackages:
+  - pat
+- package: gopkg.in/couchbase/gocb.v1
+  version: ~1.3.5
