@@ -12,23 +12,23 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	var data LoginRequest
 
 	err := json.NewDecoder(r.Body).Decode(&data)
-	res := Response{
-		Code:   Code[200],
-		Status: Status[200],
-	}
+	res := response{}
+	res.code = Code[200]
+	res.status = Status[200]
 
 	if err != nil {
-		res.Code = Code[500]
-		res.Status = Status[500]
-		res.Error = err.Error()
+		res.code = Code[500]
+		res.status = Status[500]
 	}
 
 	if data.Username != LoginUser || data.Password != LoginPass {
-		res.Code = Code[401]
-		res.Status = Status[401]
+		res.code = Code[401]
+		res.status = Status[401]
 	}
 
+	res.status = joinStatusCode(res.code, res.status)
+	res.request = r
+
 	// print response to the http writer
-	send := writeJSON(w, res)
-	httpError(w, send)
+	httpWrite(res)
 }

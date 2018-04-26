@@ -1,14 +1,19 @@
 package handlers
 
+import (
+	"net/http"
+)
+
 type LoginRequest struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-type Response struct {
-	Error  string `json:"error,omitempty"`
-	Code   int    `json:"code"`
-	Status string `json:"status"`
+type response struct {
+	status  string
+	code    int
+	body    string
+	request *http.Request
 }
 
 var (
