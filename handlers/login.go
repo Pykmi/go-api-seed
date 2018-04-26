@@ -1,34 +1,24 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
 )
 
-const LoginUser = "admin"
-const LoginPass = "admin"
+const loginUser = "admin"
+const loginPass = "admin"
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	var data LoginRequest
+	data := LoginRequest{}
+	data.Username = r.URL.Query().Get("user")
+	data.Password = r.URL.Query().Get("pass")
 
-	err := json.NewDecoder(r.Body).Decode(&data)
-	res := response{}
-	res.code = Code[200]
-	res.status = Status[200]
+	status := http.StatusOK
 
-	if err != nil {
-		res.code = Code[500]
-		res.status = Status[500]
+	if data.Username != loginUser || data.Password != loginPass {
+		status = http.StatusUnauthorized
 	}
-
-	if data.Username != LoginUser || data.Password != LoginPass {
-		res.code = Code[401]
-		res.status = Status[401]
-	}
-
-	res.status = joinStatusCode(res.code, res.status)
-	res.request = r
 
 	// print response to the http writer
-	httpWrite(res)
+	w.WriteHeader(status)
+	w.Write([]byte(""))
 }

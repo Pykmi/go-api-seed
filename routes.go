@@ -32,7 +32,7 @@ func setupRoutes() http.Handler {
 	router.Use(corsMiddle)
 
 	router.HandleFunc(pat.Get("/"), handlers.Default)
-	router.HandleFunc(pat.Post("/login"), handlers.Login)
+	router.HandleFunc(pat.Get("/login"), handlers.Login)
 
 	return router
 }
