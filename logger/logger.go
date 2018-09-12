@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// Logger : The Logger struct
+// Logger : the logger struct
 type Logger struct{}
 
 // the key type is unexported to avoid context collision
@@ -13,12 +13,17 @@ type key int
 
 const contextKey key = iota
 
+// Key : returns the contextKey, only for testing purposes
+func Key() key {
+	return contextKey
+}
+
 // Log : logs an event to stdout
 func (l *Logger) Log(e *Event) {
 	e.Print()
 }
 
-// Middleware : stores the Logger object in http context
+// Middleware : stores the logger object in http context
 func Middleware(logger *Logger) func(h http.Handler) http.Handler {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(
@@ -32,12 +37,12 @@ func Middleware(logger *Logger) func(h http.Handler) http.Handler {
 	}
 }
 
-// Get : returns the Logger object from http context
+// Get : returns the logger object from http context
 func Get(r *http.Request) *Logger {
 	return r.Context().Value(contextKey).(*Logger)
 }
 
-// New : creates a new Logger object
+// New : creates a new logger object
 func New() *Logger {
 	logger := &Logger{}
 	return logger

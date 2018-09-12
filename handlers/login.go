@@ -1,10 +1,18 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
+	"bitbucket.org/pykmiteam/mock-api/datastore"
 	"bitbucket.org/pykmiteam/mock-api/logger"
 )
+
+// LoginRequest : one potato, two potato...
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
 
 const loginUser = "admin"
 const loginPass = "admin"
@@ -17,7 +25,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	status := http.StatusOK
 
-	if data.Username != loginUser || data.Password != loginPass {
+	store := datastore.Get(r)
+	auth, err := store.Authenticate(data.Username, data.Password)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if auth == false {
 		status = http.StatusUnauthorized
 	}
 

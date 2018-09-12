@@ -6,6 +6,7 @@ import (
 	"goji.io"
 	"goji.io/pat"
 
+	"bitbucket.org/pykmiteam/mock-api/datastore"
 	"bitbucket.org/pykmiteam/mock-api/handlers"
 	"bitbucket.org/pykmiteam/mock-api/logger"
 )
@@ -25,15 +26,16 @@ func corsMiddle(h http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
-func setupRoutes(EventLogger *logger.Logger) http.Handler {
-	// API Routes
+func setupRoutes(EventLogger *logger.Logger, Store *datastore.Store) http.Handler {
+	// create router
 	router := goji.NewMux()
 
 	// add cors
 	router.Use(corsMiddle)
 	router.Use(logger.Middleware(EventLogger))
+	router.Use(datastore.Middleware(Store))
 
-	router.HandleFunc(pat.Get("/"), handlers.Default)
+	// api routes
 	router.HandleFunc(pat.Get("/api/login"), handlers.Login)
 
 	return router
