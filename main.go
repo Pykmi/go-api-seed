@@ -6,6 +6,8 @@ import (
 	"log"
 	"net"
 	"net/http"
+
+	"bitbucket.org/pykmiteam/mock-api/logger"
 )
 
 func main() {
@@ -15,10 +17,12 @@ func main() {
 
 	flag.Parse()
 
+	EventLogger := logger.New()
+
 	server := net.JoinHostPort(*httphost, *httpport)
 
 	// start the server
-	if err := startServer(server); err != nil {
+	if err := startServer(server, EventLogger); err != nil {
 		log.Printf("%#v", err)
 		return
 	}
@@ -27,11 +31,11 @@ func main() {
 /**
  * Starts the HTTP server.
  */
-func startServer(server string) error {
+func startServer(server string, EventLogger *logger.Logger) error {
 	log.Println("Server started on at: ", server)
 
 	// create http routes
-	APIrouter := setupRoutes()
+	APIrouter := setupRoutes(EventLogger)
 
 	// start listening for the client connections
 	err := http.ListenAndServe(server, APIrouter)

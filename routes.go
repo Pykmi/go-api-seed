@@ -7,6 +7,7 @@ import (
 	"goji.io/pat"
 
 	"bitbucket.org/pykmiteam/mock-api/handlers"
+	"bitbucket.org/pykmiteam/mock-api/logger"
 )
 
 // corsMiddle middleware handles the supported access-control headers
@@ -24,15 +25,16 @@ func corsMiddle(h http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
-func setupRoutes() http.Handler {
+func setupRoutes(EventLogger *logger.Logger) http.Handler {
 	// API Routes
 	router := goji.NewMux()
 
 	// add cors
 	router.Use(corsMiddle)
+	router.Use(logger.Middleware(EventLogger))
 
 	router.HandleFunc(pat.Get("/"), handlers.Default)
-	router.HandleFunc(pat.Get("/login"), handlers.Login)
+	router.HandleFunc(pat.Get("/api/login"), handlers.Login)
 
 	return router
 }
