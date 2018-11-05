@@ -4,23 +4,30 @@ import (
 	"context"
 	"net/http"
 
-	as "github.com/aerospike/aerospike-client-go"
+	"gopkg.in/mgo.v2"
 )
 
 // StoreOptions : options struct for the datastore
 type StoreOptions struct {
-	Bucket    string
-	Host      string
-	Namespace string
-	Port      int
+	Host     	string
+	Port			string
+	User			string
+	Pass			string
+	Database	string
+}
+
+// toString : return url string
+func (opt *StoreOptions) toString() string {
+	output := opt.User + ":" + opt.Pass
+	output += "@" + opt.Host + ":" + opt.Port
+  return "mongodb://" + output
 }
 
 // Store : the datastore struct
 type Store struct {
-	cli       *as.Client
+	cli				*mgo.Session
 	host      string
-	namespace string
-	port      int
+	database	string
 }
 
 // the key type is unexported to avoid context collision
@@ -56,11 +63,12 @@ func Middleware(store *Store) func(h http.Handler) http.Handler {
 func New(opt StoreOptions) *Store {
 	store := &Store{}
 
-	cli, err := as.NewClient(opt.Host, opt.Port)
+	session, err := mgo.Dial(opt.toString())
 	if err != nil {
 		panic(err)
 	}
 
-	store.cli = cli
+	store.cli = session
+	store.database = opt.Database
 	return store
 }
