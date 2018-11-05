@@ -1,30 +1,41 @@
 package datastore
 
 import (
-	as "github.com/aerospike/aerospike-client-go"
+	"gopkg.in/mgo.v2/bson"
 )
 
-const bucket string = "Users"
+// User : these fields must be found on the collection
+type User struct {
+	Username string
+	Password string
+	Name string
+	Email string
+}
 
-// Authenticate : authenticate users
-func (s *Store) Authenticate(user string, pass string) (bool, error) {
-	key, err := as.NewKey("test", bucket, user)
+const users string = "users"
+
+// AuthByEmail : authenticate user by email address
+func (s *Store) AuthByEmail(email string, pass string) (bool, error) {
+	c := s.cli.DB(s.database).C(users)
+
+	Usr := User{}
+	query := bson.M{ "email": email, "password": pass };
+
+	err := c.Find(query).One(&Usr)
 	if err != nil {
 		return false, err
-	}
-
-	rec, err := s.cli.Get(nil, key)
-	if err != nil {
-		return false, err
-	}
-
-	if rec == nil {
-		return false, nil
-	}
-
-	if rec.Bins["password"] != pass {
-		return false, nil
 	}
 
 	return true, nil
+}
+
+func (s *Store) getUserByEmail(email string) (User, error) {
+	c := s.cli.DB(s.database).C(users)
+	result := User{}
+	err := c.Find(bson.M{"email": email}).One(&result)
+	if err != nil {
+		return User{}, err
+	}
+
+	return result, nil;
 }

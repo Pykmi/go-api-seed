@@ -6,15 +6,23 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"bitbucket.org/pykmiteam/mock-api/datastore"
-	"bitbucket.org/pykmiteam/mock-api/logger"
+	db "github.com/pykmi/go-api-seed/datastore"
+	"github.com/pykmi/go-api-seed/logger"
 )
 
 const dbHost string = "127.0.0.1"
 const dbPort int = 9000
 
+const host string = "0.0.0.0"
+const port string = "8081"
+const user string = "pykmi"
+const pass string = "okilzw"
+
+const mongoDB string = "pykmi-dev-db"
+const mongoC string = "users"
+
 func TestLoginHandler(t *testing.T) {
-	req, err := http.NewRequest("GET", "/api/login?user=admin&pass=admin", nil)
+	req, err := http.NewRequest("GET", "/api/login?email=tomi.kaistila@tieto.com&pass=admin", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -23,15 +31,22 @@ func TestLoginHandler(t *testing.T) {
 	handler := http.HandlerFunc(Login)
 
 	// create datastore
-	StoreOpt := datastore.StoreOptions{Host: dbHost, Namespace: "test", Port: dbPort}
-	Store := datastore.New(StoreOpt)
+	opt := db.StoreOptions{
+		Host: host,
+		Port: port,
+		User: user,
+		Pass: pass,
+		Database: mongoDB,
+	}
+
+	store := db.New(opt)
 
 	// create event logger
-	EventLogger := logger.New()
+	EventLogger := logger.New() 
 
 	// save datastore and event logger to the context
 	ctx := req.Context()
-	ctx = context.WithValue(ctx, datastore.Key(), Store)
+	ctx = context.WithValue(ctx, db.Key(), store)
 	ctx = context.WithValue(ctx, logger.Key(), EventLogger)
 
 	req = req.WithContext(ctx)

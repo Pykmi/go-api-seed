@@ -6,31 +6,37 @@ import (
 	"log"
 	"net"
 	"net/http"
-	"strconv"
 
-	"bitbucket.org/pykmiteam/mock-api/datastore"
-	"bitbucket.org/pykmiteam/mock-api/logger"
+	"github.com/pykmi/go-api-seed/datastore"
+	"github.com/pykmi/go-api-seed/logger"
 )
 
 func main() {
 	// set default commandline flags and parse them
 	httphost := flag.String("host", "localhost", "HTTP hostname")
 	httpport := flag.String("port", "3088", "HTTP port number")
-	db := flag.String("db", "127.0.0.1:9000", "Database server host")
+
+	dbhost := flag.String("db-host", "0.0.0.0", "Database server host")
+	dbport := flag.String("db-port", "8081", "Database server port")
+
+	dbuser := flag.String("db-user", "pykmi", "Database username")
+	dbpass := flag.String("db-pass", "okilzw", "Database password")
+
+	dbname := flag.String("db", "pykmi-dev-db", "Mongo database name")
 
 	flag.Parse()
 
 	server := net.JoinHostPort(*httphost, *httpport)
 
-	// split the database host from port number
-	addr, p, _ := net.SplitHostPort(*db)
-	port, err := strconv.Atoi(p)
-	if err != nil {
-		panic(err)
-	}
-
 	// create datastore
-	StoreOpt := datastore.StoreOptions{Host: addr, Namespace: "test", Port: port}
+	StoreOpt := datastore.StoreOptions{
+		Host: *dbhost,
+		Port: *dbport,
+		User: *dbuser,
+		Pass: *dbpass,
+		Database: *dbname,
+	}
+	
 	Store := datastore.New(StoreOpt)
 
 	// create event logger
