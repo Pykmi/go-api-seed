@@ -4,29 +4,26 @@ import (
 	"fmt"
 	"net/http"
 
-	"bitbucket.org/pykmiteam/mock-api/datastore"
-	"bitbucket.org/pykmiteam/mock-api/logger"
+	"github.com/pykmi/go-api-seed/datastore"
+	"github.com/pykmi/go-api-seed/logger"
 )
 
 // LoginRequest : one potato, two potato...
 type LoginRequest struct {
-	Username string `json:"username"`
+	Email string `json:"email"`
 	Password string `json:"password"`
 }
-
-const loginUser = "admin"
-const loginPass = "admin"
 
 // Login : Handler for login requests
 func Login(w http.ResponseWriter, r *http.Request) {
 	data := LoginRequest{}
-	data.Username = r.URL.Query().Get("user")
+	data.Email = r.URL.Query().Get("email")
 	data.Password = r.URL.Query().Get("pass")
 
 	status := http.StatusOK
 
 	store := datastore.Get(r)
-	auth, err := store.Authenticate(data.Username, data.Password)
+	auth, err := store.AuthByEmail(data.Email, data.Password)
 	if err != nil {
 		fmt.Println(err)
 	}

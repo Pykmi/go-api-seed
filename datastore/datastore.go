@@ -1,6 +1,7 @@
 package datastore
 
 import (
+	"fmt"
 	"context"
 	"net/http"
 
@@ -63,6 +64,7 @@ func Middleware(store *Store) func(h http.Handler) http.Handler {
 func New(opt StoreOptions) *Store {
 	store := &Store{}
 
+	fmt.Println(opt.toString())
 	session, err := mgo.Dial(opt.toString())
 	if err != nil {
 		panic(err)

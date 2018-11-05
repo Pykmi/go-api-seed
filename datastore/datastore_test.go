@@ -16,7 +16,6 @@ const mongoDB string = "pykmi-dev-db"
 const mongoC string = "users"
 
 const adminEmail string = "tomi.kaistila@tieto.com"
-const connect string = "mongodb://pykmi:okilzw@0.0.0.0:8081"
 
 func TestNew(t *testing.T) {
 	opt := StoreOptions{
@@ -29,15 +28,27 @@ func TestNew(t *testing.T) {
 
 	store := New(opt)
 
-	/* c := session.DB(mongoDB).C(mongoC)
-
-	result := User{}
-	err = c.Find(bson.M{"username": "pykmi"}).One(&result)
+	data, err := store.getUserByEmail(adminEmail)
 	if err != nil {
 		t.Fatal(err)
-	} */
+	}
 
-	data, err := store.getUser(adminEmail)
+	if data.Email != adminEmail {
+		t.Fatalf("\nExpected v=%v got=%v", adminEmail, data.Email)
+	}
+}
+
+func TestAuthByEmail(t *testing.T) {
+	opt := StoreOptions{
+		Host: host,
+		Port: port,
+		User: user,
+		Pass: pass,
+		Database: mongoDB,
+	}
+
+	store := New(opt)
+	data, err := store.AuthByEmail(adminEmail, "admin")
 	if err != nil {
 		t.Fatal(err)
 	}

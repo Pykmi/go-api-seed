@@ -6,9 +6,9 @@ import (
 	"goji.io"
 	"goji.io/pat"
 
-	"bitbucket.org/pykmiteam/mock-api/datastore"
-	"bitbucket.org/pykmiteam/mock-api/handlers"
-	"bitbucket.org/pykmiteam/mock-api/logger"
+	"github.com/pykmi/go-api-seed/datastore"
+	"github.com/pykmi/go-api-seed/handlers"
+	"github.com/pykmi/go-api-seed/logger"
 )
 
 // corsMiddle middleware handles the supported access-control headers
